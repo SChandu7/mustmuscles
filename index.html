@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta name="description" content="RedlineCars — India's Premier Die-Cast Toy Car Store"/>
+  <title>MustMuscle CARS — Race. Collect. Dominate.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="style.css"/>
+  <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
+</head>
+<body>
+
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- LOADER -->
+  <div id="page-loader">
+    <div class="loader-inner">
+      <div class="loader-logo-text">MUST MUSCLES</div>
+      <div class="loader-track-wrap">
+        <div class="loader-track">
+          <div class="loader-fill"></div>
+          <div class="loader-car-icon">
+            <svg viewBox="0 0 80 32" fill="none">
+              <path d="M8 22 L12 12 L68 12 L72 22 Z" fill="#E8000D"/>
+              <path d="M22 12 L28 4 L54 4 L60 12 Z" fill="#CC0008"/>
+              <circle cx="22" cy="24" r="7" fill="#111" stroke="#333" stroke-width="1.5"/>
+              <circle cx="22" cy="24" r="3" fill="#E8000D"/>
+              <circle cx="58" cy="24" r="7" fill="#111" stroke="#333" stroke-width="1.5"/>
+              <circle cx="58" cy="24" r="3" fill="#E8000D"/>
+              <ellipse cx="14" cy="19" rx="5" ry="3" fill="#FFE566"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <p class="loader-status">Warming up engines...</p>
+    </div>
+  </div>
+
+  <div id="toast-stack"></div>
+  <div id="cart-backdrop" onclick="cartClose()"></div>
+
+  <!-- CART DRAWER -->
+  <aside id="cart-drawer">
+    <div class="cart-drawer-head">
+      <div class="cart-drawer-title">
+        <span class="cart-title-icon"><i class="fas fa-shopping-cart"></i></span>
+        YOUR GARAGE
+        <span class="cart-count-pill" id="cart-pill">0</span>
+      </div>
+      <button class="drawer-close-btn" onclick="cartClose()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="cart-drawer-body" id="cart-body"></div>
+    <div class="cart-drawer-footer">
+      <div class="coupon-row">
+        <input type="text" id="coupon-inp" class="coupon-field" placeholder="PROMO CODE">
+        <button class="coupon-apply-btn" onclick="applyCoupon()">APPLY</button>
+      </div>
+      <div class="cart-totals">
+        <div class="total-line"><span>Subtotal</span><span id="cart-sub-display">₹0</span></div>
+        <div class="total-line discount-line" id="discount-line" style="display:none"><span>Discount 🏷️</span><span id="cart-disc-display" style="color:var(--gold)">-₹0</span></div>
+        <div class="total-line grand"><span>TOTAL</span><span id="cart-total-display">₹0</span></div>
+      </div>
+      <button class="checkout-cta-btn" onclick="openCheckout()">
+        <i class="fas fa-lock"></i> SECURE CHECKOUT — <span id="checkout-amount">₹0</span>
+      </button>
+      <button class="continue-btn" onclick="cartClose()">← Continue Shopping</button>
+    </div>
+  </aside>
+
+  <!-- SEARCH OVERLAY -->
+  <div id="search-overlay">
+    <div class="search-overlay-inner">
+      <div class="search-bar-wrap">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="search-field" class="search-field" placeholder="Search models, brands..." oninput="liveSearch(this.value)">
+        <button class="search-close" onclick="toggleSearch(false)"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="search-suggestions"></div>
+    </div>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav id="site-nav">
+    <div class="nav-container">
+      <a href="#" class="nav-brand" onclick="navigate('home')">
+        <div class="brand-hex"></div>
+        <span class="brand-text">MUST<em>MUSCLES</em></span>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#" onclick="navigate('home')">Home</a></li>
+        <li><a href="#" onclick="navigate('shop')">Shop</a></li>
+        <li class="has-drop">
+          <a href="#">Categories <i class="fas fa-chevron-down"></i></a>
+          <div class="nav-dropdown" id="cat-dropdown"></div>
+        </li>
+        <li><a href="#" onclick="navigate('shop','new')">New Arrivals</a></li>
+        <li><a href="#" onclick="document.getElementById('brands-sec').scrollIntoView({behavior:'smooth'})">Brands</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="nav-act-btn" onclick="toggleSearch(true)"><i class="fas fa-search"></i></button>
+        <button class="nav-act-btn" id="wishlist-nav-btn" onclick="navigate('portal','wishlist')">
+          <i class="fas fa-heart"></i>
+          <span class="act-badge" id="wish-badge" style="display:none">0</span>
+        </button>
+        <button class="nav-act-btn" onclick="cartOpen()">
+          <i class="fas fa-shopping-cart"></i>
+          <span class="act-badge" id="cart-nav-badge">0</span>
+        </button>
+        <div id="guest-btns">
+          <button class="nav-login-btn" onclick="openModal('auth-modal')">Login</button>
+          <button class="btn-pill-red" onclick="switchAuthTab('register');openModal('auth-modal')">Join</button>
+        </div>
+        <div id="user-btns" style="display:none">
+          <div class="user-avatar-wrap" onclick="toggleUserDrop()">
+            <div class="user-avatar" id="user-av">U</div>
+            <div class="user-drop" id="user-drop">
+              <a href="#" onclick="navigate('portal','orders')"><i class="fas fa-receipt"></i> My Orders</a>
+              <a href="#" onclick="navigate('portal','wishlist')"><i class="fas fa-heart"></i> Wishlist</a>
+              <a href="#" onclick="navigate('portal','profile')"><i class="fas fa-user"></i> Profile</a>
+              <hr>
+              <a href="#" onclick="doLogout()" style="color:var(--red)"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="hamburger-btn" id="hamburger" onclick="toggleMobileMenu()">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ═══ PAGE: HOME ═══ -->
+  <main id="page-home" class="page active">
+
+    <!-- HERO -->
+    <section id="hero-section">
+      <div class="hero-canvas">
+        <div class="hero-grid-bg"></div>
+        <div class="hero-orb"></div>
+        <div class="speed-lines-wrap" id="speed-wrap"></div>
+        <div class="smoke-wrap" id="smoke-wrap"></div>
+        <div class="hero-road"><div class="road-center-line"></div></div>
+      </div>
+      <div class="hero-content">
+        <div class="hero-eyebrow"><span class="eyebrow-line"></span> EST. 2026 · INDIA'S #1 TOY CAR STORE</div>
+        <h1 class="hero-h1">FEEL THE<br><span class="h1-red">SPEED</span></h1>
+        <p class="hero-tagline">Collect · Race · Dominate</p>
+        <p class="hero-desc">Premium die-cast toy cars — Hot Wheels, Bburago, Maisto &amp; rare collector editions. Built for true car lovers.</p>
+        <div class="hero-cta-row">
+          <button class="btn-red-race" onclick="navigate('shop')"><i class="fas fa-flag-checkered"></i> SHOP NOW</button>
+          <button class="btn-ghost-race" onclick="document.getElementById('featured-sec').scrollIntoView({behavior:'smooth'})">VIEW COLLECTION</button>
+        </div>
+
+      </div>
+
+      <!-- PREMIUM DIE-CAST CAR -->
+      <!-- HERO CAR CAROUSEL — 3-car triangle rotation -->
+      <div class="hero-car-stage" id="heroCarStage">
+
+        <!-- Car 0: Lacquer Red (active/front) -->
+        <div class="hcar-slide hcar-active" data-car="0">
+          <svg viewBox="0 0 620 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="bMa" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#E8192A"/><stop offset="40%" stop-color="#C8111F"/><stop offset="100%" stop-color="#6B0610"/>
+              </linearGradient>
+              <linearGradient id="bHa" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#E8192A" stop-opacity="0.9"/><stop offset="100%" stop-color="#6B0610" stop-opacity="0.5"/>
+              </linearGradient>
+              <linearGradient id="gGa" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#B8D8F0" stop-opacity="0.92"/><stop offset="100%" stop-color="#3A6A9A" stop-opacity="0.5"/>
+              </linearGradient>
+              <radialGradient id="tGa" cx="0.4" cy="0.35" r="0.65">
+                <stop offset="0%" stop-color="#3A3A3A"/><stop offset="60%" stop-color="#1A1A1A"/><stop offset="100%" stop-color="#080808"/>
+              </radialGradient>
+              <radialGradient id="rGa" cx="0.4" cy="0.35" r="0.7">
+                <stop offset="0%" stop-color="#E0E0E0"/><stop offset="40%" stop-color="#C0C0C0"/><stop offset="100%" stop-color="#888"/>
+              </radialGradient>
+              <linearGradient id="cGa" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#F0F0F0"/><stop offset="50%" stop-color="#C8C8C8"/><stop offset="100%" stop-color="#909090"/>
+              </linearGradient>
+              <radialGradient id="gsa" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0%" stop-color="rgba(150,30,30,0.18)"/><stop offset="100%" stop-color="transparent"/>
+              </radialGradient>
+              <filter id="ssa" x="-10%" y="-10%" width="120%" height="130%">
+                <feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="rgba(80,0,10,0.22)"/>
+              </filter>
+            </defs>
+            <ellipse cx="310" cy="258" rx="230" ry="12" fill="url(#gsa)"/>
+            <rect x="88" y="196" width="444" height="12" rx="3" fill="#1A0408"/>
+            <path d="M88 200 L92 156 L528 156 L532 200 Z" fill="url(#bMa)" filter="url(#ssa)"/>
+            <path d="M130 156 L125 200" stroke="rgba(0,0,0,0.2)" stroke-width="1.5"/>
+            <path d="M340 156 L345 200" stroke="rgba(0,0,0,0.2)" stroke-width="1.5"/>
+            <path d="M92 178 L528 178" stroke="rgba(0,0,0,0.1)" stroke-width="1"/>
+            <rect x="200" y="172" width="36" height="4" rx="2" fill="#0A0408" stroke="url(#cGa)" stroke-width="0.5"/>
+            <rect x="382" y="172" width="36" height="4" rx="2" fill="#0A0408" stroke="url(#cGa)" stroke-width="0.5"/>
+            <path d="M178 156 L210 82 L410 82 L442 156 Z" fill="url(#bMa)"/>
+            <path d="M215 82 L230 94 L408 94 L405 82 Z" fill="rgba(255,255,255,0.1)"/>
+            <path d="M210 82 L192 156 L210 156 L232 90 Z" fill="#C8111F"/>
+            <path d="M410 82 L428 156 L410 156 L388 90 Z" fill="#C8111F"/>
+            <path d="M218 88 L238 156 L374 156 L392 88 Z" fill="url(#gGa)"/>
+            <path d="M228 92 L246 152 L366 152 L384 92 Z" fill="url(#gGa)" opacity="0.6"/>
+            <path d="M248 94 L252 150 L266 150 L262 94 Z" fill="rgba(255,255,255,0.22)"/>
+            <path d="M178 156 L192 102 L216 88 L228 92 L210 156 Z" fill="url(#gGa)" opacity="0.65"/>
+            <path d="M92 156 L110 112 L262 112 L248 156 Z" fill="url(#bMa)"/>
+            <path d="M248 156 L262 112 L358 112 L372 156 Z" fill="url(#bHa)"/>
+            <path d="M372 156 L358 112 L510 112 L528 156 Z" fill="url(#bMa)"/>
+            <path d="M310 112 L310 156" stroke="rgba(0,0,0,0.08)" stroke-width="1.5"/>
+            <rect x="462" y="120" width="42" height="4" rx="2" fill="rgba(0,0,0,0.28)"/>
+            <rect x="462" y="128" width="42" height="4" rx="2" fill="rgba(0,0,0,0.28)"/>
+            <rect x="462" y="136" width="42" height="4" rx="2" fill="rgba(0,0,0,0.28)"/>
+            <path d="M130 122 Q200 108 280 112 Q200 120 130 132 Z" fill="rgba(255,255,255,0.12)"/>
+            <path d="M86 196 L92 164 L126 164 L122 196 Z" fill="#0D0408"/>
+            <path d="M95 174 L119 174 L117 190 L97 190 Z" fill="#080204"/>
+            <line x1="95" y1="178" x2="119" y2="178" stroke="rgba(200,35,42,0.4)" stroke-width="0.8"/>
+            <line x1="95" y1="182" x2="118" y2="182" stroke="rgba(200,35,42,0.4)" stroke-width="0.8"/>
+            <line x1="95" y1="186" x2="117" y2="186" stroke="rgba(200,35,42,0.4)" stroke-width="0.8"/>
+            <line x1="103" y1="174" x2="103" y2="190" stroke="rgba(200,35,42,0.3)" stroke-width="0.8"/>
+            <line x1="111" y1="174" x2="111" y2="190" stroke="rgba(200,35,42,0.3)" stroke-width="0.8"/>
+            <rect x="86" y="193" width="40" height="5" rx="1" fill="#0A0408"/>
+            <path d="M92 164 L126 164 L124 174 L94 174 Z" fill="#FFE8A0" opacity="0.92"/>
+            <rect x="95" y="166" width="28" height="2" rx="1" fill="#FFFFFF" opacity="0.95"/>
+            <ellipse cx="106" cy="192" rx="7" ry="3.5" fill="rgba(255,240,180,0.65)"/>
+            <path d="M498 196 L508 164 L534 164 L534 196 Z" fill="#0D0408"/>
+            <rect x="498" y="188" width="36" height="8" rx="1" fill="#0A0408"/>
+            <line x1="506" y1="188" x2="506" y2="196" stroke="rgba(200,35,42,0.35)" stroke-width="1"/>
+            <line x1="514" y1="188" x2="514" y2="196" stroke="rgba(200,35,42,0.35)" stroke-width="1"/>
+            <line x1="522" y1="188" x2="522" y2="196" stroke="rgba(200,35,42,0.35)" stroke-width="1"/>
+            <path d="M506 164 L534 164 L534 174 L508 174 Z" fill="#E8192A" opacity="0.9"/>
+            <path d="M510 166 L532 166 L532 172 L510 172 Z" fill="#E8192A"/>
+            <rect x="509" y="166" width="24" height="1.5" rx="0.75" fill="rgba(255,180,180,0.8)"/>
+            <ellipse cx="508" cy="196" rx="5" ry="3.5" fill="#1A1A1A" stroke="url(#cGa)" stroke-width="1"/>
+            <ellipse cx="508" cy="196" rx="3" ry="2" fill="#0A0A0A"/>
+            <ellipse cx="522" cy="196" rx="5" ry="3.5" fill="#1A1A1A" stroke="url(#cGa)" stroke-width="1"/>
+            <ellipse cx="522" cy="196" rx="3" ry="2" fill="#0A0A0A"/>
+            <rect x="490" y="78" width="48" height="7" rx="2" fill="#6B0610"/>
+            <rect x="494" y="83" width="6" height="24" rx="1.5" fill="#6B0610"/>
+            <rect x="528" y="83" width="6" height="24" rx="1.5" fill="#6B0610"/>
+            <path d="M218 88 L392 88" stroke="url(#cGa)" stroke-width="2" fill="none"/>
+            <path d="M238 156 L374 156" stroke="url(#cGa)" stroke-width="1.5" fill="none"/>
+            <path d="M130 182 L490 182" stroke="url(#cGa)" stroke-width="0.8" opacity="0.5"/>
+            <rect x="228" y="83" width="164" height="3" rx="1.5" fill="url(#cGa)" opacity="0.8"/>
+            <ellipse cx="174" cy="214" rx="40" ry="38" fill="url(#tGa)"/>
+            <ellipse cx="174" cy="214" rx="36" ry="34" fill="none" stroke="#2A2A2A" stroke-width="1.5"/>
+            <ellipse cx="174" cy="214" rx="32" ry="30" fill="url(#rGa)"/>
+            <circle cx="174" cy="214" r="8" fill="#1A1A1A" stroke="url(#cGa)" stroke-width="1.5"/>
+            <circle cx="174" cy="214" r="4" fill="url(#cGa)"/>
+            <line x1="174" y1="186" x2="174" y2="206" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="199" y1="199" x2="183" y2="209" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="190" y1="230" x2="179" y2="219" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="158" y1="230" x2="169" y2="219" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="149" y1="199" x2="165" y2="209" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <ellipse cx="174" cy="214" rx="19" ry="17" fill="none" stroke="rgba(180,60,60,0.2)" stroke-width="1.5"/>
+            <rect x="188" y="207" width="9" height="16" rx="3" fill="#E8192A" opacity="0.8"/>
+            <ellipse cx="446" cy="214" rx="40" ry="38" fill="url(#tGa)"/>
+            <ellipse cx="446" cy="214" rx="36" ry="34" fill="none" stroke="#2A2A2A" stroke-width="1.5"/>
+            <ellipse cx="446" cy="214" rx="32" ry="30" fill="url(#rGa)"/>
+            <circle cx="446" cy="214" r="8" fill="#1A1A1A" stroke="url(#cGa)" stroke-width="1.5"/>
+            <circle cx="446" cy="214" r="4" fill="url(#cGa)"/>
+            <line x1="446" y1="186" x2="446" y2="206" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="471" y1="199" x2="455" y2="209" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="462" y1="230" x2="451" y2="219" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="430" y1="230" x2="441" y2="219" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="421" y1="199" x2="437" y2="209" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <ellipse cx="446" cy="214" rx="19" ry="17" fill="none" stroke="rgba(180,60,60,0.2)" stroke-width="1.5"/>
+            <rect x="432" y="207" width="9" height="16" rx="3" fill="#E8192A" opacity="0.8"/>
+            <rect x="297" y="114" width="26" height="14" rx="3" fill="#0A0408" stroke="url(#cGa)" stroke-width="0.8"/>
+            <text x="310" y="124" font-family="Georgia,serif" font-size="8" font-weight="700" fill="#E8192A" text-anchor="middle" letter-spacing="1">RL</text>
+            <path d="M195 96 Q310 85 425 96 Q310 104 195 100 Z" fill="rgba(255,255,255,0.08)"/>
+          </svg>
+          <div class="hcar-label"><span class="hcar-model">Ferrari 488 GTB</span><span class="hcar-scale">1:18 Scale · Die-Cast</span></div>
+        </div>
+
+        <!-- Car 1: Midnight Blue (right) -->
+        <div class="hcar-slide hcar-right" data-car="1">
+          <svg viewBox="0 0 620 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="bMb" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1A3A8A"/><stop offset="40%" stop-color="#122A6A"/><stop offset="100%" stop-color="#091840"/>
+              </linearGradient>
+              <linearGradient id="bHb" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#1A3A8A" stop-opacity="0.9"/><stop offset="100%" stop-color="#091840" stop-opacity="0.5"/>
+              </linearGradient>
+              <linearGradient id="gGb" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#B8CCE0" stop-opacity="0.92"/><stop offset="100%" stop-color="#2A4A80" stop-opacity="0.5"/>
+              </linearGradient>
+              <radialGradient id="tGb" cx="0.4" cy="0.35" r="0.65">
+                <stop offset="0%" stop-color="#3A3A3A"/><stop offset="60%" stop-color="#1A1A1A"/><stop offset="100%" stop-color="#080808"/>
+              </radialGradient>
+              <radialGradient id="rGb" cx="0.4" cy="0.35" r="0.7">
+                <stop offset="0%" stop-color="#E0E0E0"/><stop offset="40%" stop-color="#C0C0C0"/><stop offset="100%" stop-color="#888"/>
+              </radialGradient>
+              <linearGradient id="cGb" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#F0F0F0"/><stop offset="50%" stop-color="#C8C8C8"/><stop offset="100%" stop-color="#909090"/>
+              </linearGradient>
+              <radialGradient id="gsb" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0%" stop-color="rgba(150,30,30,0.18)"/><stop offset="100%" stop-color="transparent"/>
+              </radialGradient>
+              <filter id="ssb" x="-10%" y="-10%" width="120%" height="130%">
+                <feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="rgba(80,0,10,0.22)"/>
+              </filter>
+            </defs>
+            <ellipse cx="310" cy="258" rx="230" ry="12" fill="url(#gsb)"/>
+            <rect x="88" y="196" width="444" height="12" rx="3" fill="#1A0408"/>
+            <path d="M88 200 L92 156 L528 156 L532 200 Z" fill="url(#bMb)" filter="url(#ssb)"/>
+            <path d="M130 156 L125 200" stroke="rgba(0,0,0,0.2)" stroke-width="1.5"/>
+            <path d="M340 156 L345 200" stroke="rgba(0,0,0,0.2)" stroke-width="1.5"/>
+            <path d="M92 178 L528 178" stroke="rgba(0,0,0,0.1)" stroke-width="1"/>
+            <rect x="200" y="172" width="36" height="4" rx="2" fill="#0A0408" stroke="url(#cGb)" stroke-width="0.5"/>
+            <rect x="382" y="172" width="36" height="4" rx="2" fill="#0A0408" stroke="url(#cGb)" stroke-width="0.5"/>
+            <path d="M178 156 L210 82 L410 82 L442 156 Z" fill="url(#bMb)"/>
+            <path d="M215 82 L230 94 L408 94 L405 82 Z" fill="rgba(255,255,255,0.1)"/>
+            <path d="M210 82 L192 156 L210 156 L232 90 Z" fill="#122A6A"/>
+            <path d="M410 82 L428 156 L410 156 L388 90 Z" fill="#122A6A"/>
+            <path d="M218 88 L238 156 L374 156 L392 88 Z" fill="url(#gGb)"/>
+            <path d="M228 92 L246 152 L366 152 L384 92 Z" fill="url(#gGb)" opacity="0.6"/>
+            <path d="M248 94 L252 150 L266 150 L262 94 Z" fill="rgba(255,255,255,0.22)"/>
+            <path d="M178 156 L192 102 L216 88 L228 92 L210 156 Z" fill="url(#gGb)" opacity="0.65"/>
+            <path d="M92 156 L110 112 L262 112 L248 156 Z" fill="url(#bMb)"/>
+            <path d="M248 156 L262 112 L358 112 L372 156 Z" fill="url(#bHb)"/>
+            <path d="M372 156 L358 112 L510 112 L528 156 Z" fill="url(#bMb)"/>
+            <path d="M310 112 L310 156" stroke="rgba(0,0,0,0.08)" stroke-width="1.5"/>
+            <rect x="462" y="120" width="42" height="4" rx="2" fill="rgba(0,0,0,0.28)"/>
+            <rect x="462" y="128" width="42" height="4" rx="2" fill="rgba(0,0,0,0.28)"/>
+            <rect x="462" y="136" width="42" height="4" rx="2" fill="rgba(0,0,0,0.28)"/>
+            <path d="M130 122 Q200 108 280 112 Q200 120 130 132 Z" fill="rgba(255,255,255,0.12)"/>
+            <path d="M86 196 L92 164 L126 164 L122 196 Z" fill="#0D0408"/>
+            <path d="M95 174 L119 174 L117 190 L97 190 Z" fill="#080204"/>
+            <line x1="95" y1="178" x2="119" y2="178" stroke="rgba(200,35,42,0.4)" stroke-width="0.8"/>
+            <line x1="95" y1="182" x2="118" y2="182" stroke="rgba(200,35,42,0.4)" stroke-width="0.8"/>
+            <line x1="95" y1="186" x2="117" y2="186" stroke="rgba(200,35,42,0.4)" stroke-width="0.8"/>
+            <line x1="103" y1="174" x2="103" y2="190" stroke="rgba(200,35,42,0.3)" stroke-width="0.8"/>
+            <line x1="111" y1="174" x2="111" y2="190" stroke="rgba(200,35,42,0.3)" stroke-width="0.8"/>
+            <rect x="86" y="193" width="40" height="5" rx="1" fill="#0A0408"/>
+            <path d="M92 164 L126 164 L124 174 L94 174 Z" fill="#FFE8A0" opacity="0.92"/>
+            <rect x="95" y="166" width="28" height="2" rx="1" fill="#FFFFFF" opacity="0.95"/>
+            <ellipse cx="106" cy="192" rx="7" ry="3.5" fill="rgba(255,240,180,0.65)"/>
+            <path d="M498 196 L508 164 L534 164 L534 196 Z" fill="#0D0408"/>
+            <rect x="498" y="188" width="36" height="8" rx="1" fill="#0A0408"/>
+            <line x1="506" y1="188" x2="506" y2="196" stroke="rgba(200,35,42,0.35)" stroke-width="1"/>
+            <line x1="514" y1="188" x2="514" y2="196" stroke="rgba(200,35,42,0.35)" stroke-width="1"/>
+            <line x1="522" y1="188" x2="522" y2="196" stroke="rgba(200,35,42,0.35)" stroke-width="1"/>
+            <path d="M506 164 L534 164 L534 174 L508 174 Z" fill="#1A3A8A" opacity="0.9"/>
+            <path d="M510 166 L532 166 L532 172 L510 172 Z" fill="#1A3A8A"/>
+            <rect x="509" y="166" width="24" height="1.5" rx="0.75" fill="rgba(255,180,180,0.8)"/>
+            <ellipse cx="508" cy="196" rx="5" ry="3.5" fill="#1A1A1A" stroke="url(#cGb)" stroke-width="1"/>
+            <ellipse cx="508" cy="196" rx="3" ry="2" fill="#0A0A0A"/>
+            <ellipse cx="522" cy="196" rx="5" ry="3.5" fill="#1A1A1A" stroke="url(#cGb)" stroke-width="1"/>
+            <ellipse cx="522" cy="196" rx="3" ry="2" fill="#0A0A0A"/>
+            <rect x="490" y="78" width="48" height="7" rx="2" fill="#091840"/>
+            <rect x="494" y="83" width="6" height="24" rx="1.5" fill="#091840"/>
+            <rect x="528" y="83" width="6" height="24" rx="1.5" fill="#091840"/>
+            <path d="M218 88 L392 88" stroke="url(#cGb)" stroke-width="2" fill="none"/>
+            <path d="M238 156 L374 156" stroke="url(#cGb)" stroke-width="1.5" fill="none"/>
+            <path d="M130 182 L490 182" stroke="url(#cGb)" stroke-width="0.8" opacity="0.5"/>
+            <rect x="228" y="83" width="164" height="3" rx="1.5" fill="url(#cGb)" opacity="0.8"/>
+            <ellipse cx="174" cy="214" rx="40" ry="38" fill="url(#tGb)"/>
+            <ellipse cx="174" cy="214" rx="36" ry="34" fill="none" stroke="#2A2A2A" stroke-width="1.5"/>
+            <ellipse cx="174" cy="214" rx="32" ry="30" fill="url(#rGb)"/>
+            <circle cx="174" cy="214" r="8" fill="#1A1A1A" stroke="url(#cGb)" stroke-width="1.5"/>
+            <circle cx="174" cy="214" r="4" fill="url(#cGb)"/>
+            <line x1="174" y1="186" x2="174" y2="206" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="199" y1="199" x2="183" y2="209" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="190" y1="230" x2="179" y2="219" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="158" y1="230" x2="169" y2="219" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="149" y1="199" x2="165" y2="209" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <ellipse cx="174" cy="214" rx="19" ry="17" fill="none" stroke="rgba(180,60,60,0.2)" stroke-width="1.5"/>
+            <rect x="188" y="207" width="9" height="16" rx="3" fill="#1A3A8A" opacity="0.8"/>
+            <ellipse cx="446" cy="214" rx="40" ry="38" fill="url(#tGb)"/>
+            <ellipse cx="446" cy="214" rx="36" ry="34" fill="none" stroke="#2A2A2A" stroke-width="1.5"/>
+            <ellipse cx="446" cy="214" rx="32" ry="30" fill="url(#rGb)"/>
+            <circle cx="446" cy="214" r="8" fill="#1A1A1A" stroke="url(#cGb)" stroke-width="1.5"/>
+            <circle cx="446" cy="214" r="4" fill="url(#cGb)"/>
+            <line x1="446" y1="186" x2="446" y2="206" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="471" y1="199" x2="455" y2="209" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="462" y1="230" x2="451" y2="219" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="430" y1="230" x2="441" y2="219" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="421" y1="199" x2="437" y2="209" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <ellipse cx="446" cy="214" rx="19" ry="17" fill="none" stroke="rgba(180,60,60,0.2)" stroke-width="1.5"/>
+            <rect x="432" y="207" width="9" height="16" rx="3" fill="#1A3A8A" opacity="0.8"/>
+            <rect x="297" y="114" width="26" height="14" rx="3" fill="#0A0408" stroke="url(#cGb)" stroke-width="0.8"/>
+            <text x="310" y="124" font-family="Georgia,serif" font-size="8" font-weight="700" fill="#1A3A8A" text-anchor="middle" letter-spacing="1">RL</text>
+            <path d="M195 96 Q310 85 425 96 Q310 104 195 100 Z" fill="rgba(255,255,255,0.08)"/>
+          </svg>
+          <div class="hcar-label"><span class="hcar-model">Porsche 911 GT3</span><span class="hcar-scale">1:18 Scale · Die-Cast</span></div>
+        </div>
+
+        <!-- Car 2: Racing Green (left) -->
+        <div class="hcar-slide hcar-left" data-car="2">
+          <svg viewBox="0 0 620 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="bMc" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1A5A1A"/><stop offset="40%" stop-color="#0E3E0E"/><stop offset="100%" stop-color="#072407"/>
+              </linearGradient>
+              <linearGradient id="bHc" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#1A5A1A" stop-opacity="0.9"/><stop offset="100%" stop-color="#072407" stop-opacity="0.5"/>
+              </linearGradient>
+              <linearGradient id="gGc" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#AACCA8" stop-opacity="0.92"/><stop offset="100%" stop-color="#2A5A2A" stop-opacity="0.5"/>
+              </linearGradient>
+              <radialGradient id="tGc" cx="0.4" cy="0.35" r="0.65">
+                <stop offset="0%" stop-color="#3A3A3A"/><stop offset="60%" stop-color="#1A1A1A"/><stop offset="100%" stop-color="#080808"/>
+              </radialGradient>
+              <radialGradient id="rGc" cx="0.4" cy="0.35" r="0.7">
+                <stop offset="0%" stop-color="#E0E0E0"/><stop offset="40%" stop-color="#C0C0C0"/><stop offset="100%" stop-color="#888"/>
+              </radialGradient>
+              <linearGradient id="cGc" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#F0F0F0"/><stop offset="50%" stop-color="#C8C8C8"/><stop offset="100%" stop-color="#909090"/>
+              </linearGradient>
+              <radialGradient id="gsc" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0%" stop-color="rgba(150,30,30,0.18)"/><stop offset="100%" stop-color="transparent"/>
+              </radialGradient>
+              <filter id="ssc" x="-10%" y="-10%" width="120%" height="130%">
+                <feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="rgba(80,0,10,0.22)"/>
+              </filter>
+            </defs>
+            <ellipse cx="310" cy="258" rx="230" ry="12" fill="url(#gsc)"/>
+            <rect x="88" y="196" width="444" height="12" rx="3" fill="#1A0408"/>
+            <path d="M88 200 L92 156 L528 156 L532 200 Z" fill="url(#bMc)" filter="url(#ssc)"/>
+            <path d="M130 156 L125 200" stroke="rgba(0,0,0,0.2)" stroke-width="1.5"/>
+            <path d="M340 156 L345 200" stroke="rgba(0,0,0,0.2)" stroke-width="1.5"/>
+            <path d="M92 178 L528 178" stroke="rgba(0,0,0,0.1)" stroke-width="1"/>
+            <rect x="200" y="172" width="36" height="4" rx="2" fill="#0A0408" stroke="url(#cGc)" stroke-width="0.5"/>
+            <rect x="382" y="172" width="36" height="4" rx="2" fill="#0A0408" stroke="url(#cGc)" stroke-width="0.5"/>
+            <path d="M178 156 L210 82 L410 82 L442 156 Z" fill="url(#bMc)"/>
+            <path d="M215 82 L230 94 L408 94 L405 82 Z" fill="rgba(255,255,255,0.1)"/>
+            <path d="M210 82 L192 156 L210 156 L232 90 Z" fill="#0E3E0E"/>
+            <path d="M410 82 L428 156 L410 156 L388 90 Z" fill="#0E3E0E"/>
+            <path d="M218 88 L238 156 L374 156 L392 88 Z" fill="url(#gGc)"/>
+            <path d="M228 92 L246 152 L366 152 L384 92 Z" fill="url(#gGc)" opacity="0.6"/>
+            <path d="M248 94 L252 150 L266 150 L262 94 Z" fill="rgba(255,255,255,0.22)"/>
+            <path d="M178 156 L192 102 L216 88 L228 92 L210 156 Z" fill="url(#gGc)" opacity="0.65"/>
+            <path d="M92 156 L110 112 L262 112 L248 156 Z" fill="url(#bMc)"/>
+            <path d="M248 156 L262 112 L358 112 L372 156 Z" fill="url(#bHc)"/>
+            <path d="M372 156 L358 112 L510 112 L528 156 Z" fill="url(#bMc)"/>
+            <path d="M310 112 L310 156" stroke="rgba(0,0,0,0.08)" stroke-width="1.5"/>
+            <rect x="462" y="120" width="42" height="4" rx="2" fill="rgba(0,0,0,0.28)"/>
+            <rect x="462" y="128" width="42" height="4" rx="2" fill="rgba(0,0,0,0.28)"/>
+            <rect x="462" y="136" width="42" height="4" rx="2" fill="rgba(0,0,0,0.28)"/>
+            <path d="M130 122 Q200 108 280 112 Q200 120 130 132 Z" fill="rgba(255,255,255,0.12)"/>
+            <path d="M86 196 L92 164 L126 164 L122 196 Z" fill="#0D0408"/>
+            <path d="M95 174 L119 174 L117 190 L97 190 Z" fill="#080204"/>
+            <line x1="95" y1="178" x2="119" y2="178" stroke="rgba(200,35,42,0.4)" stroke-width="0.8"/>
+            <line x1="95" y1="182" x2="118" y2="182" stroke="rgba(200,35,42,0.4)" stroke-width="0.8"/>
+            <line x1="95" y1="186" x2="117" y2="186" stroke="rgba(200,35,42,0.4)" stroke-width="0.8"/>
+            <line x1="103" y1="174" x2="103" y2="190" stroke="rgba(200,35,42,0.3)" stroke-width="0.8"/>
+            <line x1="111" y1="174" x2="111" y2="190" stroke="rgba(200,35,42,0.3)" stroke-width="0.8"/>
+            <rect x="86" y="193" width="40" height="5" rx="1" fill="#0A0408"/>
+            <path d="M92 164 L126 164 L124 174 L94 174 Z" fill="#FFE8A0" opacity="0.92"/>
+            <rect x="95" y="166" width="28" height="2" rx="1" fill="#FFFFFF" opacity="0.95"/>
+            <ellipse cx="106" cy="192" rx="7" ry="3.5" fill="rgba(255,240,180,0.65)"/>
+            <path d="M498 196 L508 164 L534 164 L534 196 Z" fill="#0D0408"/>
+            <rect x="498" y="188" width="36" height="8" rx="1" fill="#0A0408"/>
+            <line x1="506" y1="188" x2="506" y2="196" stroke="rgba(200,35,42,0.35)" stroke-width="1"/>
+            <line x1="514" y1="188" x2="514" y2="196" stroke="rgba(200,35,42,0.35)" stroke-width="1"/>
+            <line x1="522" y1="188" x2="522" y2="196" stroke="rgba(200,35,42,0.35)" stroke-width="1"/>
+            <path d="M506 164 L534 164 L534 174 L508 174 Z" fill="#1A5A1A" opacity="0.9"/>
+            <path d="M510 166 L532 166 L532 172 L510 172 Z" fill="#1A5A1A"/>
+            <rect x="509" y="166" width="24" height="1.5" rx="0.75" fill="rgba(255,180,180,0.8)"/>
+            <ellipse cx="508" cy="196" rx="5" ry="3.5" fill="#1A1A1A" stroke="url(#cGc)" stroke-width="1"/>
+            <ellipse cx="508" cy="196" rx="3" ry="2" fill="#0A0A0A"/>
+            <ellipse cx="522" cy="196" rx="5" ry="3.5" fill="#1A1A1A" stroke="url(#cGc)" stroke-width="1"/>
+            <ellipse cx="522" cy="196" rx="3" ry="2" fill="#0A0A0A"/>
+            <rect x="490" y="78" width="48" height="7" rx="2" fill="#072407"/>
+            <rect x="494" y="83" width="6" height="24" rx="1.5" fill="#072407"/>
+            <rect x="528" y="83" width="6" height="24" rx="1.5" fill="#072407"/>
+            <path d="M218 88 L392 88" stroke="url(#cGc)" stroke-width="2" fill="none"/>
+            <path d="M238 156 L374 156" stroke="url(#cGc)" stroke-width="1.5" fill="none"/>
+            <path d="M130 182 L490 182" stroke="url(#cGc)" stroke-width="0.8" opacity="0.5"/>
+            <rect x="228" y="83" width="164" height="3" rx="1.5" fill="url(#cGc)" opacity="0.8"/>
+            <ellipse cx="174" cy="214" rx="40" ry="38" fill="url(#tGc)"/>
+            <ellipse cx="174" cy="214" rx="36" ry="34" fill="none" stroke="#2A2A2A" stroke-width="1.5"/>
+            <ellipse cx="174" cy="214" rx="32" ry="30" fill="url(#rGc)"/>
+            <circle cx="174" cy="214" r="8" fill="#1A1A1A" stroke="url(#cGc)" stroke-width="1.5"/>
+            <circle cx="174" cy="214" r="4" fill="url(#cGc)"/>
+            <line x1="174" y1="186" x2="174" y2="206" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="199" y1="199" x2="183" y2="209" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="190" y1="230" x2="179" y2="219" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="158" y1="230" x2="169" y2="219" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="149" y1="199" x2="165" y2="209" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <ellipse cx="174" cy="214" rx="19" ry="17" fill="none" stroke="rgba(180,60,60,0.2)" stroke-width="1.5"/>
+            <rect x="188" y="207" width="9" height="16" rx="3" fill="#1A5A1A" opacity="0.8"/>
+            <ellipse cx="446" cy="214" rx="40" ry="38" fill="url(#tGc)"/>
+            <ellipse cx="446" cy="214" rx="36" ry="34" fill="none" stroke="#2A2A2A" stroke-width="1.5"/>
+            <ellipse cx="446" cy="214" rx="32" ry="30" fill="url(#rGc)"/>
+            <circle cx="446" cy="214" r="8" fill="#1A1A1A" stroke="url(#cGc)" stroke-width="1.5"/>
+            <circle cx="446" cy="214" r="4" fill="url(#cGc)"/>
+            <line x1="446" y1="186" x2="446" y2="206" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="471" y1="199" x2="455" y2="209" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="462" y1="230" x2="451" y2="219" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="430" y1="230" x2="441" y2="219" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="421" y1="199" x2="437" y2="209" stroke="#999" stroke-width="2.5" stroke-linecap="round"/>
+            <ellipse cx="446" cy="214" rx="19" ry="17" fill="none" stroke="rgba(180,60,60,0.2)" stroke-width="1.5"/>
+            <rect x="432" y="207" width="9" height="16" rx="3" fill="#1A5A1A" opacity="0.8"/>
+            <rect x="297" y="114" width="26" height="14" rx="3" fill="#0A0408" stroke="url(#cGc)" stroke-width="0.8"/>
+            <text x="310" y="124" font-family="Georgia,serif" font-size="8" font-weight="700" fill="#1A5A1A" text-anchor="middle" letter-spacing="1">RL</text>
+            <path d="M195 96 Q310 85 425 96 Q310 104 195 100 Z" fill="rgba(255,255,255,0.08)"/>
+          </svg>
+          <div class="hcar-label"><span class="hcar-model">Aston Martin DB11</span><span class="hcar-scale">1:18 Scale · Die-Cast</span></div>
+        </div>
+
+        <!-- Dot indicators -->
+        <div class="hcar-dots">
+          <button class="hcar-dot hcar-dot-active" onclick="heroCarGoTo(0)"></button>
+          <button class="hcar-dot" onclick="heroCarGoTo(1)"></button>
+          <button class="hcar-dot" onclick="heroCarGoTo(2)"></button>
+        </div>
+      </div>
+
+      <div class="hero-stats-strip">
+        <div class="hstat"><span class="hstat-num">2,500<sup>+</sup></span><span class="hstat-lbl">Models</span></div>
+        <div class="hstat-div"></div>
+        <div class="hstat"><span class="hstat-num">150<sup>+</sup></span><span class="hstat-lbl">Brands</span></div>
+        <div class="hstat-div"></div>
+        <div class="hstat"><span class="hstat-num">50K<sup>+</sup></span><span class="hstat-lbl">Collectors</span></div>
+        <div class="hstat-div"></div>
+        <div class="hstat"><span class="hstat-num">4.9<sup>★</sup></span><span class="hstat-lbl">Rating</span></div>
+      </div>
+    </section>
+
+    <!-- TICKER -->
+    <div class="ticker-wrap">
+      <div class="ticker-track" id="ticker-track"></div>
+    </div>
+
+   
+
+
+    <!-- BRANDS -->
+    <section class="section" id="brands-sec">
+      <div class="section-tag reveal" style="justify-content:center;margin-bottom:12px"><span></span>TOP BRANDS<span></span></div>
+      <h2 class="section-title reveal" style="text-align:center;margin-bottom:48px">Racing <span>Brands</span></h2>
+      <div class="brands-row reveal" id="brands-row"></div>
+    </section>
+
+    <!-- FEATURES STRIP -->
+    <div class="features-strip reveal">
+      <div class="feat-item"><div class="feat-icon"><i class="fas fa-medal"></i></div><div class="feat-text"><strong>Authentic Die-Cast</strong><span>Officially licensed</span></div></div>
+      <div class="feat-div"></div>
+      <div class="feat-item"><div class="feat-icon"><i class="fas fa-shipping-fast"></i></div><div class="feat-text"><strong>Free Shipping</strong><span>Orders above ₹999</span></div></div>
+      <div class="feat-div"></div>
+      <div class="feat-item"><div class="feat-icon"><i class="fas fa-lock"></i></div><div class="feat-text"><strong>Razorpay Secured</strong><span>UPI · Cards · Wallets</span></div></div>
+      <div class="feat-div"></div>
+      <div class="feat-item"><div class="feat-icon"><i class="fas fa-undo"></i></div><div class="feat-text"><strong>7-Day Returns</strong><span>Hassle-free policy</span></div></div>
+      <div class="feat-div"></div>
+      <div class="feat-item"><div class="feat-icon"><i class="fas fa-headset"></i></div><div class="feat-text"><strong>24/7 Support</strong><span>Always here for you</span></div></div>
+    </div>
+
+   
+
+    <!-- RACE SPEC SECTION -->
+    <section class="section race-spec-section reveal">
+      <div class="race-spec-inner">
+        <div class="race-spec-text">
+          <div class="section-tag"><span></span>WHY MUSTMUSCLES</div>
+          <h2 class="section-title">Built For <span>Real Racers</span></h2>
+          <p class="race-spec-desc">Every model in our collection is precision die-cast, officially licensed, and battle-tested by collectors worldwide.</p>
+          <div class="spec-list">
+            <div class="spec-item"><div class="spec-dot"></div><div><strong>Premium Die-Cast Metal + ABS Plastic</strong><p>Authentic weight and finish on every model</p></div></div>
+            <div class="spec-item"><div class="spec-dot"></div><div><strong>1:64 to 1:18 Scale Available</strong><p>From pocket Hot Wheels to massive display pieces</p></div></div>
+            <div class="spec-item"><div class="spec-dot"></div><div><strong>Collector-Safe Protective Packaging</strong><p>Every order ships in custom-fit protective boxes</p></div></div>
+            <div class="spec-item"><div class="spec-dot"></div><div><strong>Limited Edition Drops</strong><p>Exclusive models — once they're gone, they're gone</p></div></div>
+          </div>
+          <button class="btn-red-race" onclick="navigate('shop')" style="margin-top:32px">EXPLORE COLLECTION</button>
+        </div>
+        <div class="race-spec-card">
+          <div class="spec-card-label">TECH SPECS</div>
+          <div class="sc-row"><span>Materials</span><strong>Die-Cast Metal + ABS</strong></div>
+          <div class="sc-row"><span>Scales</span><strong>1:64 / 1:43 / 1:24 / 1:18</strong></div>
+          <div class="sc-row"><span>Brands</span><strong>150+ Worldwide</strong></div>
+          <div class="sc-row"><span>Models</span><strong>2,500+ SKUs</strong></div>
+          <div class="sc-row"><span>Packaging</span><strong>Collector Blister Pack</strong></div>
+          <div class="sc-row"><span>Shipping</span><strong>Pan-India 2–5 Days</strong></div>
+          <div class="sc-row"><span>Returns</span><strong>7-Day Easy Returns</strong></div>
+          <div class="sc-row"><span>Payment</span><strong>Razorpay Secured</strong></div>
+        </div>
+      </div>
+    </section>
+
+  
+
+    <!-- NEWSLETTER -->
+    <section class="newsletter-section reveal">
+      <div class="nl-bg-text">MUSTMUSCLES</div>
+      <div class="nl-inner">
+        <div class="section-tag" style="justify-content:center"><span></span>STAY IN THE RACE<span></span></div>
+        <h2 class="section-title" style="text-align:center">Join the <span>MustMuscles Club</span></h2>
+        <p class="nl-desc">Get early access to new drops, limited editions, and exclusive race deals.</p>
+        <form class="nl-form" onsubmit="subscribeNL(event)">
+          <input type="email" id="nl-email" class="nl-input" placeholder="Enter your email address...">
+          <button type="submit" class="nl-submit-btn">JOIN NOW <i class="fas fa-arrow-right"></i></button>
+        </form>
+        <p class="nl-footnote">No spam. Unsubscribe anytime. 🏎️</p>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer id="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand-col">
+          <div class="footer-logo">MUST<span>MUSCLES</span></div>
+          <p class="footer-about">India's premier destination for die-cast toy cars, collector models, and racing memorabilia.</p>
+          <div class="footer-socials">
+            <a href="#" class="social-pill"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-pill"><i class="fab fa-youtube"></i></a>
+            <a href="#" class="social-pill"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-pill"><i class="fab fa-facebook-f"></i></a>
+          </div>
+        </div>
+        <div class="footer-link-col"><h4>SHOP</h4><ul>
+          <li><a href="#" onclick="navigate('shop')">All Cars</a></li>
+          <li><a href="#" onclick="navigate('shop','new')">New Arrivals</a></li>
+          <li><a href="#" onclick="navigate('shop','featured')">Featured</a></li>
+          <li><a href="#" onclick="navigate('shop','bestseller')">Best Sellers</a></li>
+          <li><a href="#" onclick="navigate('shop','sale')">On Sale</a></li>
+        </ul></div>
+        <div class="footer-link-col"><h4>CATEGORIES</h4><ul id="footer-cat-list">
+          <li><a href="#">Hot Wheels</a></li>
+          <li><a href="#">Sports Cars</a></li>
+          <li><a href="#">Muscle Cars</a></li>
+          <li><a href="#">Racing Series</a></li>
+          <li><a href="#">Collector Editions</a></li>
+        </ul></div>
+        <div class="footer-link-col"><h4>HELP</h4><ul>
+          <li><a href="#">Shipping Info</a></li>
+          <li><a href="#">Returns Policy</a></li>
+          <li><a href="#">Track Order</a></li>
+          <li><a href="#">FAQs</a></li>
+          <li><a href="#">Contact Us</a></li>
+        </ul></div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 MustMuscleCars. All rights reserved.</span>
+        <div class="payment-badges">
+          <span class="pay-badge">RAZORPAY</span><span class="pay-badge">UPI</span>
+          <span class="pay-badge">VISA</span><span class="pay-badge">MC</span><span class="pay-badge">AMEX</span>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- ═══ PAGE: SHOP ═══ -->
+  <main id="page-shop" class="page" style="margin-top:70px;min-height:100vh">
+    <div class="shop-hero">
+      <h1 class="shop-title">ALL <span>RIDES</span></h1>
+      <p class="shop-subtitle">Explore 2,500+ die-cast models from legendary brands</p>
+    </div>
+    <div class="shop-layout">
+      <aside class="shop-sidebar">
+        <div class="filter-panel">
+          <div class="filter-panel-head">
+            <span><i class="fas fa-sliders-h"></i> FILTERS</span>
+            <button class="clear-filters-btn" onclick="clearShopFilters()">Clear All</button>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Search</label>
+            <div class="filter-search-wrap">
+              <i class="fas fa-search"></i>
+              <input type="text" id="shop-q" class="filter-input" placeholder="Brand, model..." oninput="debounceFilter()">
+            </div>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Category</label>
+            <select class="filter-select" id="shop-cat" onchange="applyShopFilter()">
+              <option value="">All Categories</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Scale</label>
+            <select class="filter-select" id="shop-scale" onchange="applyShopFilter()">
+              <option value="">Any Scale</option>
+              <option>1:64</option><option>1:43</option><option>1:32</option>
+              <option>1:24</option><option>1:18</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Price Range (₹)</label>
+            <div class="price-range-wrap">
+              <input type="number" id="shop-min" class="filter-input" placeholder="Min" oninput="debounceFilter()">
+              <span style="color:var(--gray3)">—</span>
+              <input type="number" id="shop-max" class="filter-input" placeholder="Max" oninput="debounceFilter()">
+            </div>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Sort By</label>
+            <select class="filter-select" id="shop-sort" onchange="applyShopFilter()">
+              <option value="-created_at">Newest First</option>
+              <option value="price">Price: Low → High</option>
+              <option value="-price">Price: High → Low</option>
+              <option value="name">Name A–Z</option>
+            </select>
+          </div>
+          <div class="filter-checkboxes">
+            <label class="fcheck"><input type="checkbox" id="fcheck-new" onchange="applyShopFilter()"><span>New Arrivals</span></label>
+            <label class="fcheck"><input type="checkbox" id="fcheck-hot" onchange="applyShopFilter()"><span>Best Sellers</span></label>
+            <label class="fcheck"><input type="checkbox" id="fcheck-sale" onchange="applyShopFilter()"><span>On Sale</span></label>
+            <label class="fcheck"><input type="checkbox" id="fcheck-instock" onchange="applyShopFilter()"><span>In Stock Only</span></label>
+          </div>
+        </div>
+      </aside>
+      <div class="shop-main-area">
+        <div class="shop-toolbar">
+          <div class="shop-result-count" id="shop-result-count">Loading...</div>
+          <div class="shop-view-toggle">
+            <button class="view-btn active" id="grid-view-btn" onclick="setShopView('grid')"><i class="fas fa-th"></i></button>
+            <button class="view-btn" id="list-view-btn" onclick="setShopView('list')"><i class="fas fa-list"></i></button>
+          </div>
+        </div>
+        <div class="products-grid" id="shop-product-grid"></div>
+        <div id="shop-empty" style="display:none" class="shop-empty-state">
+          <i class="fas fa-car"></i><h3>No rides found</h3><p>Try adjusting your filters</p>
+          <button class="btn-red-race" onclick="clearShopFilters()">Clear Filters</button>
+        </div>
+        <div id="shop-loader" class="shop-loading" style="display:none">
+          <i class="fas fa-spinner fa-spin" style="font-size:36px;color:var(--red)"></i><p>Loading rides...</p>
+        </div>
+        <div class="shop-pagination" id="shop-pagination"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══ PAGE: USER PORTAL ═══ -->
+  <main id="page-portal" class="page" style="margin-top:70px;min-height:100vh">
+    <div class="portal-hero">
+      <h1 class="portal-title">MY <span>GARAGE</span></h1>
+      <p id="portal-welcome-msg" class="portal-subtitle">Welcome back, Racer</p>
+    </div>
+    <div class="portal-tabs-wrap">
+      <div class="portal-tabs" id="portal-tab-bar">
+        <button class="ptab active" data-tab="orders" onclick="switchPortalTab('orders')"><i class="fas fa-receipt"></i> Orders</button>
+        <button class="ptab" data-tab="wishlist" onclick="switchPortalTab('wishlist')"><i class="fas fa-heart"></i> Wishlist</button>
+        <button class="ptab" data-tab="addresses" onclick="switchPortalTab('addresses')"><i class="fas fa-map-marker-alt"></i> Addresses</button>
+        <button class="ptab" data-tab="profile" onclick="switchPortalTab('profile')"><i class="fas fa-user-cog"></i> Profile</button>
+      </div>
+    </div>
+    <div class="portal-content" id="portal-content">
+      <div id="ptab-orders" class="ptab-panel active">
+        <div class="panel-table-wrap">
+          <div class="panel-table-head"><h3>Order History</h3></div>
+          <div class="resp-table-wrap">
+            <table class="rc-table" id="orders-table">
+              <thead><tr><th>Order #</th><th>Date</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th><th>Action</th></tr></thead>
+              <tbody id="orders-tbody"></tbody>
+            </table>
+          </div>
+          <div id="orders-empty" style="display:none" class="empty-state">
+            <i class="fas fa-receipt"></i><p>No orders yet. Time to race!</p>
+            <button class="btn-red-race" onclick="navigate('shop')">Shop Now</button>
+          </div>
+        </div>
+      </div>
+      <div id="ptab-wishlist" class="ptab-panel">
+        <div class="products-grid" id="wishlist-product-grid"></div>
+        <div id="wishlist-empty" style="display:none" class="empty-state">
+          <i class="fas fa-heart"></i><p>Your wishlist is empty.</p>
+        </div>
+      </div>
+      <div id="ptab-addresses" class="ptab-panel">
+        <div style="text-align:right;margin-bottom:20px">
+          <button class="btn-red-race" onclick="openModal('addr-modal')"><i class="fas fa-plus"></i> Add Address</button>
+        </div>
+        <div class="addresses-grid" id="addresses-grid"></div>
+        <div id="addr-empty" style="display:none" class="empty-state">
+          <i class="fas fa-map-marker-alt"></i><p>No addresses saved.</p>
+        </div>
+      </div>
+      <div id="ptab-profile" class="ptab-panel">
+        <div class="profile-form-wrap">
+          <h3 class="form-section-title">Personal Information</h3>
+          <div class="form-row-2">
+            <div class="form-group"><label class="flabel">First Name</label><input class="finput" id="p-fname" type="text"></div>
+            <div class="form-group"><label class="flabel">Last Name</label><input class="finput" id="p-lname" type="text"></div>
+          </div>
+          <div class="form-group"><label class="flabel">Email</label><input class="finput" id="p-email" type="email" disabled style="opacity:0.5"></div>
+          <div class="form-group"><label class="flabel">Phone</label><input class="finput" id="p-phone" type="tel"></div>
+          <button class="btn-red-race" onclick="saveProfile()"><i class="fas fa-save"></i> Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══ PAGE: ADMIN ═══ -->
+  <main id="page-admin" class="page admin-page" style="min-height:100vh">
+    <aside class="admin-aside" id="admin-aside">
+      <div class="admin-brand">
+        <div class="admin-brand-logo">MUST<span>MUSCLES</span></div>
+        <div class="admin-brand-sub">ADMIN PANEL</div>
+      </div>
+      <nav class="admin-nav">
+        <div class="admin-nav-section">OVERVIEW</div>
+        <button class="a-nav-btn active" data-sec="dashboard" onclick="adminSection('dashboard')"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></button>
+        <button class="a-nav-btn" data-sec="analytics" onclick="adminSection('analytics')"><i class="fas fa-chart-line"></i><span>Analytics</span></button>
+        <div class="admin-nav-section">CATALOG</div>
+        <button class="a-nav-btn" data-sec="products" onclick="adminSection('products')"><i class="fas fa-car"></i><span>Products</span></button>
+        <button class="a-nav-btn" data-sec="categories" onclick="adminSection('categories')"><i class="fas fa-tags"></i><span>Categories</span></button>
+        <button class="a-nav-btn" data-sec="sections" onclick="adminSection('sections')"><i class="fas fa-layer-group"></i><span>Sections</span></button>
+        <button class="a-nav-btn" data-sec="banners" onclick="adminSection('banners')"><i class="fas fa-image"></i><span>Banners</span></button>
+        <div class="admin-nav-section">SALES</div>
+        <button class="a-nav-btn" data-sec="orders" onclick="adminSection('orders')"><i class="fas fa-receipt"></i><span>Orders</span></button>
+        <button class="a-nav-btn" data-sec="customers" onclick="adminSection('customers')"><i class="fas fa-users"></i><span>Customers</span></button>
+        <button class="a-nav-btn" data-sec="coupons" onclick="adminSection('coupons')"><i class="fas fa-percent"></i><span>Coupons</span></button>
+        <div class="admin-nav-section">ALERTS</div>
+        <button class="a-nav-btn" data-sec="lowstock" onclick="adminSection('lowstock')">
+          <i class="fas fa-exclamation-triangle"></i><span>Low Stock</span>
+          <span class="a-nav-badge" id="lowstock-badge">0</span>
+        </button>
+        <div style="margin-top:auto"></div>
+        <button class="a-nav-btn" onclick="exitAdmin()"><i class="fas fa-arrow-left"></i><span>Exit Panel</span></button>
+        <button class="a-nav-btn" style="color:var(--red)" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i><span>Logout</span></button>
+      </nav>
+    </aside>
+    <div class="admin-main" id="admin-main">
+      <header class="admin-topbar">
+        <div class="admin-topbar-left">
+          <button class="admin-toggle-btn" onclick="toggleAdminSidebar()"><i class="fas fa-bars"></i></button>
+          <span class="admin-page-label" id="admin-page-label">Dashboard</span>
+        </div>
+        <div class="admin-topbar-right">
+          <div class="admin-notif-btn" onclick="adminSection('lowstock')">
+            <i class="fas fa-bell"></i>
+            <span class="notif-dot" id="notif-dot" style="display:none"></span>
+          </div>
+          <span class="admin-user-label" id="admin-user-label">Admin</span>
+        </div>
+      </header>
+      <div class="admin-content" id="admin-content">
+
+        <div id="asec-dashboard" class="admin-section active">
+          <div class="stat-cards" id="stat-cards"></div>
+          <div class="admin-table-card">
+            <div class="atc-head"><h3>Recent Orders</h3><button class="btn-sm-red" onclick="adminSection('orders')">View All</button></div>
+            <div class="resp-table-wrap">
+              <table class="rc-table"><thead><tr><th>Order #</th><th>Customer</th><th>Total</th><th>Payment</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+              <tbody id="recent-orders-tbody"></tbody></table>
+            </div>
+          </div>
+        </div>
+
+        <div id="asec-products" class="admin-section">
+          <div class="asec-toolbar">
+            <div class="atb-search"><i class="fas fa-search"></i><input type="text" id="admin-prod-q" placeholder="Search products..." oninput="loadAdminProds()"></div>
+            <button class="btn-red-race" onclick="openProductForm()"><i class="fas fa-plus"></i> Add Product</button>
+          </div>
+          <div class="admin-table-card">
+            <div class="resp-table-wrap">
+              <table class="rc-table"><thead><tr><th>Name</th><th>SKU</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="admin-prod-tbody"></tbody></table>
+            </div>
+            <div class="admin-pagination" id="admin-prod-pag"></div>
+          </div>
+        </div>
+
+        <div id="asec-categories" class="admin-section">
+          <div class="asec-toolbar"><div></div><button class="btn-red-race" onclick="openModal('cat-form-modal')"><i class="fas fa-plus"></i> Add Category</button></div>
+          <div class="admin-table-card"><div class="resp-table-wrap">
+            <table class="rc-table"><thead><tr><th>Name</th><th>Slug</th><th>Products</th><th>Active</th><th>Actions</th></tr></thead>
+            <tbody id="admin-cat-tbody"></tbody></table>
+          </div></div>
+        </div>
+
+        <div id="asec-sections" class="admin-section">
+          <div class="asec-toolbar"><div></div><button class="btn-red-race" onclick="openModal('sec-form-modal')"><i class="fas fa-plus"></i> Add Section</button></div>
+          <div class="admin-table-card"><div class="resp-table-wrap">
+            <table class="rc-table"><thead><tr><th>Name</th><th>Slug</th><th>Products</th><th>Order</th><th>Active</th><th>Actions</th></tr></thead>
+            <tbody id="admin-sec-tbody"></tbody></table>
+          </div></div>
+        </div>
+
+        <div id="asec-orders" class="admin-section">
+          <div class="asec-toolbar">
+            <div class="status-filter-pills">
+              <button class="sfpill active" onclick="filterAdminOrders(this,'')">All</button>
+              <button class="sfpill" onclick="filterAdminOrders(this,'pending')">Pending</button>
+              <button class="sfpill" onclick="filterAdminOrders(this,'confirmed')">Confirmed</button>
+              <button class="sfpill" onclick="filterAdminOrders(this,'shipped')">Shipped</button>
+              <button class="sfpill" onclick="filterAdminOrders(this,'delivered')">Delivered</button>
+            </div>
+          </div>
+          <div class="admin-table-card"><div class="resp-table-wrap">
+            <table class="rc-table"><thead><tr><th>Order #</th><th>Customer</th><th>Total</th><th>Items</th><th>Payment</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+            <tbody id="admin-orders-tbody"></tbody></table>
+          </div><div class="admin-pagination" id="admin-orders-pag"></div></div>
+        </div>
+
+        <div id="asec-customers" class="admin-section">
+          <div class="admin-table-card"><div class="resp-table-wrap">
+            <table class="rc-table"><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Orders</th><th>Total Spent</th><th>Joined</th><th>Status</th></tr></thead>
+            <tbody id="admin-cust-tbody"></tbody></table>
+          </div></div>
+        </div>
+
+        <div id="asec-coupons" class="admin-section">
+          <div class="asec-toolbar"><div></div><button class="btn-red-race" onclick="openModal('coupon-form-modal')"><i class="fas fa-plus"></i> Create Coupon</button></div>
+          <div class="admin-table-card"><div class="resp-table-wrap">
+            <table class="rc-table"><thead><tr><th>Code</th><th>Type</th><th>Value</th><th>Min Order</th><th>Used/Max</th><th>Valid Until</th><th>Active</th></tr></thead>
+            <tbody id="admin-coupon-tbody"></tbody></table>
+          </div></div>
+        </div>
+
+        <div id="asec-lowstock" class="admin-section">
+          <div class="admin-table-card">
+            <div class="atc-head"><h3 style="color:var(--gold)"><i class="fas fa-exclamation-triangle"></i> Low Stock Alert</h3></div>
+            <div class="resp-table-wrap">
+              <table class="rc-table"><thead><tr><th>Product</th><th>SKU</th><th>Stock</th><th>Price</th><th>Action</th></tr></thead>
+              <tbody id="admin-lowstock-tbody"></tbody></table>
+            </div>
+          </div>
+        </div>
+
+        <div id="asec-analytics" class="admin-section">
+          <div class="stat-cards" id="analytics-stat-cards"></div>
+          <div class="analytics-grid">
+            <div class="admin-table-card">
+              <div class="atc-head"><h3>Top Products</h3></div>
+              <div class="resp-table-wrap"><table class="rc-table"><thead><tr><th>Product</th><th>Qty Sold</th><th>Revenue</th></tr></thead><tbody id="analytics-top-tbody"></tbody></table></div>
+            </div>
+            <div class="admin-table-card">
+              <div class="atc-head"><h3>Category Breakdown</h3></div>
+              <div class="resp-table-wrap"><table class="rc-table"><thead><tr><th>Category</th><th>Products</th></tr></thead><tbody id="analytics-cat-tbody"></tbody></table></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="asec-banners" class="admin-section">
+          <div class="asec-toolbar"><div></div><button class="btn-red-race" onclick="openModal('banner-form-modal')"><i class="fas fa-plus"></i> Add Banner</button></div>
+          <div class="admin-table-card"><div class="resp-table-wrap">
+            <table class="rc-table"><thead><tr><th>Title</th><th>Subtitle</th><th>CTA</th><th>Active</th></tr></thead>
+            <tbody id="admin-banners-tbody"></tbody></table>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══════ MODALS ═══════ -->
+
+  <!-- AUTH -->
+  <div class="modal-backdrop" id="auth-modal">
+    <div class="modal-box">
+      <button class="modal-x" onclick="closeModal('auth-modal')"><i class="fas fa-times"></i></button>
+      <div class="auth-tabs">
+        <button class="atab active" id="atab-login" onclick="switchAuthTab('login')">LOGIN</button>
+        <button class="atab" id="atab-register" onclick="switchAuthTab('register')">JOIN</button>
+      </div>
+      <div id="auth-login-panel" class="auth-panel active">
+        <div class="auth-panel-head">Welcome Back, Racer 🏎️</div>
+        <div id="login-err" class="form-err" style="display:none"></div>
+        <div class="form-group"><label class="flabel">Username</label><input class="finput" id="l-user" type="text" placeholder="Your username"></div>
+        <div class="form-group"><label class="flabel">Password</label><input class="finput" id="l-pass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <button class="btn-red-race full-width" onclick="doLogin()">START ENGINE <i class="fas fa-arrow-right"></i></button>
+        <p class="auth-switch-txt">Admin? <a href="#" onclick="switchAuthTab('admin')">Admin Login →</a></p>
+      </div>
+      <div id="auth-register-panel" class="auth-panel">
+        <div class="auth-panel-head">Join the Race 🏁</div>
+        <div id="reg-err" class="form-err" style="display:none"></div>
+        <div class="form-row-2">
+          <div class="form-group"><label class="flabel">First Name</label><input class="finput" id="r-fname" type="text"></div>
+          <div class="form-group"><label class="flabel">Last Name</label><input class="finput" id="r-lname" type="text"></div>
+        </div>
+        <div class="form-group"><label class="flabel">Username *</label><input class="finput" id="r-user" type="text"></div>
+        <div class="form-group"><label class="flabel">Email *</label><input class="finput" id="r-email" type="email"></div>
+        <div class="form-group"><label class="flabel">Phone</label><input class="finput" id="r-phone" type="tel" placeholder="+91 xxxxxxxxxx"></div>
+        <div class="form-group"><label class="flabel">Password *</label><input class="finput" id="r-pass" type="password"></div>
+        <button class="btn-red-race full-width" onclick="doRegister()">CREATE ACCOUNT <i class="fas fa-flag-checkered"></i></button>
+      </div>
+      <div id="auth-admin-panel" class="auth-panel">
+        <div class="auth-panel-head" style="color:var(--gold)">⚙ Admin Access</div>
+        <div id="admin-err" class="form-err" style="display:none"></div>
+        <div class="form-group"><label class="flabel">Admin Username</label><input class="finput" id="a-user" type="text"></div>
+        <div class="form-group"><label class="flabel">Password</label><input class="finput" id="a-pass" type="password" onkeydown="if(event.key==='Enter')doAdminLogin()"></div>
+        <button class="btn-gold-race full-width" onclick="doAdminLogin()">ACCESS PANEL <i class="fas fa-unlock"></i></button>
+        <p class="auth-switch-txt"><a href="#" onclick="switchAuthTab('login')">← Back to Login</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUCT DETAIL -->
+  <div class="modal-backdrop" id="product-modal">
+    <div class="modal-box modal-wide"><button class="modal-x" onclick="closeModal('product-modal')"><i class="fas fa-times"></i></button><div id="product-modal-body"></div></div>
+  </div>
+
+  <!-- CHECKOUT -->
+  <div class="modal-backdrop" id="checkout-modal">
+    <div class="modal-box modal-wide">
+      <button class="modal-x" onclick="closeModal('checkout-modal')"><i class="fas fa-times"></i></button>
+      <div class="checkout-step-bar">
+        <div class="cstep active" id="cs1"><span class="cstep-num">1</span> Address</div>
+        <div class="cstep-line"></div>
+        <div class="cstep" id="cs2"><span class="cstep-num">2</span> Review</div>
+        <div class="cstep-line"></div>
+        <div class="cstep" id="cs3"><span class="cstep-num">3</span> Payment</div>
+      </div>
+      <div id="checkout-s1" class="checkout-step-panel active">
+        <h3 class="form-section-title">Delivery Address</h3>
+        <div id="saved-addresses-checkout"></div>
+        <div class="new-addr-toggle"><button class="toggle-new-addr-btn" onclick="toggleNewAddrForm()">+ Use a New Address</button></div>
+        <div id="new-addr-form-wrap" style="display:none">
+          <div class="form-row-2">
+            <div class="form-group"><label class="flabel">Full Name *</label><input class="finput" id="ca-name" type="text"></div>
+            <div class="form-group"><label class="flabel">Phone *</label><input class="finput" id="ca-phone" type="tel"></div>
+          </div>
+          <div class="form-group"><label class="flabel">Address Line 1 *</label><input class="finput" id="ca-line1" type="text"></div>
+          <div class="form-group"><label class="flabel">Address Line 2</label><input class="finput" id="ca-line2" type="text"></div>
+          <div class="form-row-2">
+            <div class="form-group"><label class="flabel">City *</label><input class="finput" id="ca-city" type="text"></div>
+            <div class="form-group"><label class="flabel">State *</label><input class="finput" id="ca-state" type="text"></div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group"><label class="flabel">Pincode *</label><input class="finput" id="ca-pin" type="text"></div>
+            <div class="form-group"><label class="flabel">Country</label><input class="finput" id="ca-country" type="text" value="India"></div>
+          </div>
+          <button class="btn-outline-race" onclick="saveCheckoutAddr()">Save &amp; Use This Address</button>
+        </div>
+        <div class="checkout-nav"><div></div><button class="btn-red-race" onclick="checkoutNext(2)">Continue → Review</button></div>
+      </div>
+      <div id="checkout-s2" class="checkout-step-panel">
+        <h3 class="form-section-title">Order Review</h3>
+        <div id="checkout-review-list"></div>
+        <div class="checkout-totals-box">
+          <div class="total-line"><span>Subtotal</span><span id="co-sub">₹0</span></div>
+          <div class="total-line" id="co-disc-row" style="display:none;color:var(--gold)"><span>Discount</span><span id="co-disc">-₹0</span></div>
+          <div class="total-line grand"><span>TOTAL</span><span id="co-total">₹0</span></div>
+        </div>
+        <div class="checkout-nav">
+          <button class="btn-outline-race" onclick="checkoutNext(1)">← Back</button>
+          <button class="btn-red-race" onclick="checkoutNext(3)">Continue → Payment</button>
+        </div>
+      </div>
+      <div id="checkout-s3" class="checkout-step-panel">
+        <div class="payment-step-inner">
+          <div class="payment-icon-big"><i class="fas fa-lock"></i></div>
+          <h3>Secured by Razorpay</h3>
+          <p class="payment-method-row">UPI &nbsp;·&nbsp; Cards &nbsp;·&nbsp; Net Banking &nbsp;·&nbsp; Wallets</p>
+          <div class="payment-total-box">
+            <span>Amount to Pay</span>
+            <span class="pay-amount" id="pay-amount">₹0</span>
+          </div>
+          <button class="btn-red-race pay-cta-btn" onclick="initiateRazorpay()"><i class="fas fa-bolt"></i> PAY NOW</button>
+          <p class="payment-secure-note"><i class="fas fa-shield-alt"></i> 100% Secure. Your data is encrypted.</p>
+        </div>
+        <div class="checkout-nav"><button class="btn-outline-race" onclick="checkoutNext(2)">← Back</button><div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ORDER DETAIL (User) -->
+  <div class="modal-backdrop" id="order-detail-modal">
+    <div class="modal-box modal-wide"><button class="modal-x" onclick="closeModal('order-detail-modal')"><i class="fas fa-times"></i></button><div id="order-detail-body"></div></div>
+  </div>
+
+  <!-- ADMIN PRODUCT FORM -->
+  <div class="modal-backdrop" id="prod-form-modal">
+    <div class="modal-box modal-wide">
+      <button class="modal-x" onclick="closeModal('prod-form-modal')"><i class="fas fa-times"></i></button>
+      <h2 class="modal-title" id="prod-form-title">ADD PRODUCT</h2>
+      <div class="form-section-title" style="margin-top:20px">Basic Info</div>
+      <div class="form-row-2">
+        <div class="form-group"><label class="flabel">Product Name *</label><input class="finput" id="pf-name" type="text"></div>
+        <div class="form-group"><label class="flabel">SKU</label><input class="finput" id="pf-sku" type="text" placeholder="Auto-generated"></div>
+      </div>
+      <div class="form-row-2">
+        <div class="form-group"><label class="flabel">Category</label><select class="finput" id="pf-cat"><option value="">Select...</option></select></div>
+        <div class="form-group"><label class="flabel">Scale</label>
+          <select class="finput" id="pf-scale">
+            <option value="1:64">1:64</option><option value="1:43">1:43</option>
+            <option value="1:32">1:32</option><option value="1:24">1:24</option><option value="1:18">1:18</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row-2">
+        <div class="form-group"><label class="flabel">Car Model</label><input class="finput" id="pf-carmodel" type="text" placeholder="Ferrari 488 GTB"></div>
+        <div class="form-group"><label class="flabel">Color</label><input class="finput" id="pf-color" type="text" placeholder="Rosso Corsa"></div>
+      </div>
+      <div class="form-group"><label class="flabel">Short Description</label><input class="finput" id="pf-shortdesc" type="text"></div>
+      <div class="form-group"><label class="flabel">Full Description</label><textarea class="finput" id="pf-desc" rows="4"></textarea></div>
+      <div class="form-section-title" style="margin-top:16px">Pricing &amp; Inventory</div>
+      <div class="form-row-2">
+        <div class="form-group"><label class="flabel">Price (₹) *</label><input class="finput" id="pf-price" type="number" placeholder="299"></div>
+        <div class="form-group"><label class="flabel">Compare Price (MRP)</label><input class="finput" id="pf-compare" type="number" placeholder="399"></div>
+      </div>
+      <div class="form-row-2">
+        <div class="form-group"><label class="flabel">Stock *</label><input class="finput" id="pf-stock" type="number" placeholder="50"></div>
+        <div class="form-group"><label class="flabel">Weight (grams)</label><input class="finput" id="pf-weight" type="number"></div>
+      </div>
+      <div class="form-section-title" style="margin-top:16px">Tags</div>
+      <div class="checkbox-row">
+        <label class="fcheck"><input type="checkbox" id="pf-featured"><span>Featured</span></label>
+        <label class="fcheck"><input type="checkbox" id="pf-new"><span>New Arrival</span></label>
+        <label class="fcheck"><input type="checkbox" id="pf-bestseller"><span>Best Seller</span></label>
+        <label class="fcheck"><input type="checkbox" id="pf-active" checked><span>Active</span></label>
+      </div>
+      <div style="text-align:right;margin-top:24px">
+        <button class="btn-outline-race" onclick="closeModal('prod-form-modal')" style="margin-right:12px">Cancel</button>
+        <button class="btn-red-race" onclick="submitProductForm()"><i class="fas fa-save"></i> Save Product</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN CAT FORM -->
+  <div class="modal-backdrop" id="cat-form-modal">
+    <div class="modal-box"><button class="modal-x" onclick="closeModal('cat-form-modal')"><i class="fas fa-times"></i></button>
+      <h2 class="modal-title">ADD CATEGORY</h2>
+      <div style="margin-top:20px">
+        <div class="form-group"><label class="flabel">Category Name *</label><input class="finput" id="cf-name" type="text"></div>
+        <div class="form-group"><label class="flabel">Description</label><textarea class="finput" id="cf-desc" rows="3"></textarea></div>
+        <label class="fcheck"><input type="checkbox" id="cf-active" checked><span>Active</span></label>
+        <div style="text-align:right;margin-top:20px"><button class="btn-red-race" onclick="submitCategoryForm()"><i class="fas fa-save"></i> Save</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN SEC FORM -->
+  <div class="modal-backdrop" id="sec-form-modal">
+    <div class="modal-box"><button class="modal-x" onclick="closeModal('sec-form-modal')"><i class="fas fa-times"></i></button>
+      <h2 class="modal-title">ADD SECTION</h2>
+      <div style="margin-top:20px">
+        <div class="form-group"><label class="flabel">Section Name *</label><input class="finput" id="sf-name" type="text"></div>
+        <div class="form-group"><label class="flabel">Description</label><textarea class="finput" id="sf-desc" rows="3"></textarea></div>
+        <div class="form-group"><label class="flabel">Display Order</label><input class="finput" id="sf-order" type="number" value="0"></div>
+        <div style="text-align:right;margin-top:20px"><button class="btn-red-race" onclick="submitSectionForm()"><i class="fas fa-save"></i> Save</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN COUPON FORM -->
+  <div class="modal-backdrop" id="coupon-form-modal">
+    <div class="modal-box"><button class="modal-x" onclick="closeModal('coupon-form-modal')"><i class="fas fa-times"></i></button>
+      <h2 class="modal-title">CREATE COUPON</h2>
+      <div style="margin-top:20px">
+        <div class="form-group"><label class="flabel">Coupon Code *</label><input class="finput" id="cpf-code" type="text" placeholder="REDLINE20" style="text-transform:uppercase"></div>
+        <div class="form-row-2">
+          <div class="form-group"><label class="flabel">Discount Type</label><select class="finput" id="cpf-type"><option value="percent">Percentage (%)</option><option value="flat">Flat Amount (₹)</option></select></div>
+          <div class="form-group"><label class="flabel">Value *</label><input class="finput" id="cpf-val" type="number" placeholder="20"></div>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group"><label class="flabel">Min Order (₹)</label><input class="finput" id="cpf-min" type="number" placeholder="0"></div>
+          <div class="form-group"><label class="flabel">Max Uses</label><input class="finput" id="cpf-max" type="number" placeholder="Unlimited"></div>
+        </div>
+        <div class="form-group"><label class="flabel">Valid Until</label><input class="finput" id="cpf-until" type="datetime-local"></div>
+        <div style="text-align:right;margin-top:20px"><button class="btn-red-race" onclick="submitCouponForm()"><i class="fas fa-save"></i> Create Coupon</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN ORDER DETAIL -->
+  <div class="modal-backdrop" id="admin-order-modal">
+    <div class="modal-box modal-wide"><button class="modal-x" onclick="closeModal('admin-order-modal')"><i class="fas fa-times"></i></button><div id="admin-order-body"></div></div>
+  </div>
+
+  <!-- BANNER FORM -->
+  <div class="modal-backdrop" id="banner-form-modal">
+    <div class="modal-box"><button class="modal-x" onclick="closeModal('banner-form-modal')"><i class="fas fa-times"></i></button>
+      <h2 class="modal-title">ADD BANNER</h2>
+      <div style="margin-top:20px">
+        <div class="form-group"><label class="flabel">Title *</label><input class="finput" id="bf-title" type="text"></div>
+        <div class="form-group"><label class="flabel">Subtitle</label><input class="finput" id="bf-subtitle" type="text"></div>
+        <div class="form-group"><label class="flabel">Link URL</label><input class="finput" id="bf-link" type="text"></div>
+        <div class="form-group"><label class="flabel">CTA Text</label><input class="finput" id="bf-cta" type="text" value="Shop Now"></div>
+        <div style="text-align:right;margin-top:20px"><button class="btn-red-race" onclick="submitBannerForm()"><i class="fas fa-save"></i> Save</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADDRESS MODAL -->
+  <div class="modal-backdrop" id="addr-modal">
+    <div class="modal-box"><button class="modal-x" onclick="closeModal('addr-modal')"><i class="fas fa-times"></i></button>
+      <h2 class="modal-title">ADD ADDRESS</h2>
+      <div style="margin-top:20px">
+        <div class="form-row-2">
+          <div class="form-group"><label class="flabel">Full Name *</label><input class="finput" id="am-name" type="text"></div>
+          <div class="form-group"><label class="flabel">Phone *</label><input class="finput" id="am-phone" type="tel"></div>
+        </div>
+        <div class="form-group"><label class="flabel">Line 1 *</label><input class="finput" id="am-l1" type="text"></div>
+        <div class="form-group"><label class="flabel">Line 2</label><input class="finput" id="am-l2" type="text"></div>
+        <div class="form-row-2">
+          <div class="form-group"><label class="flabel">City</label><input class="finput" id="am-city" type="text"></div>
+          <div class="form-group"><label class="flabel">State</label><input class="finput" id="am-state" type="text"></div>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group"><label class="flabel">Pincode</label><input class="finput" id="am-pin" type="text"></div>
+          <div class="form-group"><label class="flabel">Country</label><input class="finput" id="am-country" type="text" value="India"></div>
+        </div>
+        <label class="fcheck"><input type="checkbox" id="am-default"><span>Set as default address</span></label>
+        <div style="text-align:right;margin-top:20px"><button class="btn-red-race" onclick="submitAddress()"><i class="fas fa-save"></i> Save Address</button></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
