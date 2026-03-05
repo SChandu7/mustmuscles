@@ -2,14 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <meta name="description" content="RedlineCars — India's Premier Die-Cast Toy Car Store"/>
   <title>MustMuscle CARS — Race. Collect. Dominate.</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="style.css"/><link rel="stylesheet" href="responsive.css"/>
+
   <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
 </head>
 <body>
@@ -153,7 +154,7 @@
         <p class="hero-desc">Premium die-cast toy cars — Hot Wheels, Bburago, Maisto &amp; rare collector editions. Built for true car lovers.</p>
         <div class="hero-cta-row">
           <button class="btn-red-race" onclick="navigate('shop')"><i class="fas fa-flag-checkered"></i> SHOP NOW</button>
-          <button class="btn-ghost-race" onclick="document.getElementById('featured-sec').scrollIntoView({behavior:'smooth'})">VIEW COLLECTION</button>
+          <button class="btn-ghost-race" onclick="navigate('shop')">VIEW COLLECTION</button>
         </div>
 
       </div>
@@ -1192,5 +1193,7 @@
   </div>
 
   <script src="app.js"></script>
+  <script src="mobile.js"></script>
+
 </body>
 </html>
