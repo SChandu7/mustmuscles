@@ -7,40 +7,10 @@
 (function () {
   'use strict';
 
-  /* ─── HAMBURGER MENU ──────────────────────────────────────────── */
-  const hamburger = document.getElementById('hamburger');
-  const navLinks  = document.getElementById('nav-links');
-
-  if (hamburger && navLinks) {
-    // Override the existing toggleMobileMenu
-    window.toggleMobileMenu = function () {
-      const isOpen = navLinks.classList.toggle('mobile-open');
-      hamburger.classList.toggle('open', isOpen);
-      document.body.classList.toggle('no-scroll', isOpen);
-    };
-
-    // Close menu when a nav link is tapped
-    navLinks.addEventListener('click', function (e) {
-      if (e.target.tagName === 'A' || e.target.closest('a')) {
-        navLinks.classList.remove('mobile-open');
-        hamburger.classList.remove('open');
-        document.body.classList.remove('no-scroll');
-      }
-    });
-
-    // Close on outside tap
-    document.addEventListener('click', function (e) {
-      if (
-        navLinks.classList.contains('mobile-open') &&
-        !navLinks.contains(e.target) &&
-        !hamburger.contains(e.target)
-      ) {
-        navLinks.classList.remove('mobile-open');
-        hamburger.classList.remove('open');
-        document.body.classList.remove('no-scroll');
-      }
-    });
-  }
+  /* ─── HAMBURGER MENU — hidden on mobile, no-op on desktop ───── */
+  // Hamburger is display:none on mobile via CSS.
+  // Keep a safe no-op override so no JS errors if somehow called.
+  window.toggleMobileMenu = function () { /* nav hidden on mobile */ };
 
   /* ─── SHOP SIDEBAR TOGGLE ─────────────────────────────────────── */
   function injectShopSidebarToggle () {
@@ -185,9 +155,6 @@
     const _origNavigate = window.navigate;
     window.navigate = function (page, sub) {
       if (_origNavigate) _origNavigate.apply(this, arguments);
-      // Close hamburger
-      if (navLinks) navLinks.classList.remove('mobile-open');
-      if (hamburger) hamburger.classList.remove('open');
       document.body.classList.remove('no-scroll');
       // Re-inject sidebar toggle if needed
       if (page === 'shop') {
