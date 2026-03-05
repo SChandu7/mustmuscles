@@ -12,97 +12,72 @@
 
   /* ── NAVBAR ── */
   #site-nav { height: 60px; }
-  .nav-container { padding: 0 18px; }
+  .nav-container { padding: 0 14px; }
   .nav-brand { margin-right: auto; }
-  .brand-text { font-size: 17px; letter-spacing: 2px; }
-  .brand-hex { width: 18px; height: 18px; }
+  .brand-text { font-size: 16px; letter-spacing: 2px; }
+  .brand-hex { width: 17px; height: 17px; }
 
-  .nav-links {
-    position: fixed;
-    top: 60px; left: 0; right: 0;
-    background: var(--surface);
-    border-top: 2px solid var(--red);
-    border-bottom: 1px solid var(--line);
-    flex-direction: column;
-    padding: 8px 0 20px;
-    max-height: 0; overflow: hidden;
-    opacity: 0; visibility: hidden;
-    transition: max-height .38s var(--ease-out), opacity .28s ease;
-    box-shadow: 0 12px 40px rgba(30,26,21,.14);
-    z-index: 999;
-  }
-  .nav-links.mobile-open {
-    max-height: 420px;
-    opacity: 1; visibility: visible;
-  }
-  .nav-links li { width: 100%; }
-  .nav-links a {
-    height: auto; padding: 13px 22px;
-    font-size: 11px; letter-spacing: 2px;
-    border-bottom: 1px solid var(--bg-2);
-    justify-content: flex-start;
-  }
-  .nav-links a::after { display: none; }
-  .has-drop .nav-dropdown {
-    position: static; opacity: 1; visibility: visible;
-    transform: none; border: none; box-shadow: none;
-    background: var(--bg-2); border-radius: 0;
-    display: none;
-  }
-  .has-drop:hover .nav-dropdown { display: none; }
+  /* ── Hide nav links + hamburger completely on mobile ── */
+  .nav-links  { display: none !important; }
+  .hamburger-btn { display: none !important; }
 
-  .nav-actions { gap: 0; }
+  /* ── Nav actions — compact icon row ── */
+  .nav-actions { gap: 0; margin-left: auto; }
   .nav-act-btn { width: 36px; height: 36px; font-size: 15px; }
-  .nav-login-btn { padding: 7px 12px; font-size: 10px; letter-spacing: 1px; }
-  .btn-pill-red  { padding: 7px 12px; font-size: 10px; letter-spacing: 1px; }
-  .hamburger-btn { display: flex; margin-left: 4px; }
 
-  /* Hamburger animation */
-  .hamburger-btn.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
-  .hamburger-btn.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
-  .hamburger-btn.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+  /* LOGIN + JOIN buttons — keep small and visible */
+  .nav-login-btn { padding: 7px 10px; font-size: 9px; letter-spacing: 1px; margin-left: 2px; }
+  .btn-pill-red  { padding: 7px 10px; font-size: 9px; letter-spacing: 1px; margin-left: 2px; }
 
-  /* ── HERO ── */
+  /* ── HERO — car first, text second on mobile ── */
   #hero-section {
     min-height: auto;
     padding-top: 60px;
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: column;    /* stack vertically */
+    align-items: stretch;
   }
   #hero-section::before { display: none; }
   #hero-section::after  { display: none; }
   .hero-grid-bg { display: none; }
-  .hero-orb { width: 180px; height: 180px; top: 10%; right: 2%; opacity: .5; }
+  .hero-orb { display: none; }
 
+  /* Car stage rises to TOP */
+  .hero-car-stage {
+    order: -1;                  /* ← comes before .hero-content */
+    position: relative; top: auto; left: auto; right: auto; bottom: auto;
+    width: 100%; height: 260px;
+    overflow: hidden;
+    background: var(--bg-2);
+    border-bottom: 1px solid var(--line);
+  }
+
+  /* Text content sits below */
   .hero-content {
+    order: 0;
     max-width: 100%;
-    padding: 40px 20px 20px;
+    padding: 32px 20px 24px;
     animation: heroReveal .6s ease .1s both;
   }
-  .hero-eyebrow { font-size: 9px; letter-spacing: 3px; margin-bottom: 14px; }
-  .hero-h1 { font-size: clamp(44px, 13vw, 66px); margin-bottom: 6px; }
-  .hero-tagline { font-size: 11px; letter-spacing: 4px; margin-bottom: 14px; }
-  .hero-desc { font-size: 14px; margin-bottom: 28px; }
+
+  .hero-eyebrow { font-size: 9px; letter-spacing: 3px; margin-bottom: 12px; }
+  .hero-h1 { font-size: clamp(40px, 12vw, 62px); margin-bottom: 6px; }
+  .hero-tagline { font-size: 11px; letter-spacing: 4px; margin-bottom: 12px; }
+  .hero-desc { font-size: 14px; margin-bottom: 24px; max-width: 100%; }
   .hero-cta-row { flex-direction: column; gap: 10px; margin-bottom: 0; }
   .hero-cta-row .btn-red-race,
   .hero-cta-row .btn-ghost-race { width: 100%; justify-content: center; padding: 14px 24px; }
 
-  /* ── HERO CAR STAGE — mobile full-width carousel ── */
-  .hero-car-stage {
-    position: relative; top: auto; left: auto; right: auto; bottom: auto;
-    width: 100%; height: 280px;
-    overflow: hidden;
-  }
+  /* ── HERO CAR CAROUSEL — positioned within the top stage ── */
   .hcar-active {
-    transform: translate(-50%, -64%) scale(0.82);
+    transform: translate(-50%, -58%) scale(0.80);
   }
   .hcar-right {
-    transform: translate(14%, 18%) scale(0.28);
-    opacity: 0.35;
+    transform: translate(16%, 22%) scale(0.26);
+    opacity: 0.30;
   }
   .hcar-left {
-    transform: translate(-113%, 18%) scale(0.28);
-    opacity: 0.35;
+    transform: translate(-114%, 22%) scale(0.26);
+    opacity: 0.30;
   }
   .hcar-dots { bottom: 8px; }
   .hcar-label .hcar-model { font-size: 13px; }
@@ -307,12 +282,14 @@
   .brand-text { font-size: 15px; letter-spacing: 1.5px; }
 
   /* HERO */
-  .hero-h1 { font-size: clamp(38px, 14vw, 56px); }
+  .hero-h1 { font-size: clamp(36px, 13vw, 52px); }
   .hero-desc { font-size: 13px; line-height: 1.75; }
 
-  /* HERO CAR */
-  .hero-car-stage { height: 240px; }
-  .hcar-active { transform: translate(-50%, -68%) scale(0.72); }
+  /* HERO CAR — smaller stage on tiny screens */
+  .hero-car-stage { height: 220px; }
+  .hcar-active { transform: translate(-50%, -56%) scale(0.70); }
+  .hcar-right  { transform: translate(18%, 24%) scale(0.22); opacity: 0.25; }
+  .hcar-left   { transform: translate(-116%, 24%) scale(0.22); opacity: 0.25; }
 
   /* STATS */
   .hstat-num { font-size: 24px; }
@@ -365,10 +342,12 @@
    TABLET  481px – 900px
 ═══════════════════════════════════════════════════════════════ */
 @media (min-width: 481px) and (max-width: 900px) {
-  /* Hero */
+  /* Hero — car first on tablet too */
   .hero-h1 { font-size: clamp(48px, 11vw, 80px); }
-  .hero-car-stage { height: 320px; }
-  .hcar-active { transform: translate(-50%, -68%) scale(0.88); }
+  .hero-car-stage { height: 300px; }
+  .hcar-active { transform: translate(-50%, -60%) scale(0.86); }
+  .hcar-right  { transform: translate(12%, 20%) scale(0.26); opacity: 0.30; }
+  .hcar-left   { transform: translate(-112%, 20%) scale(0.26); opacity: 0.30; }
 
   /* Products — 3 cols on tablet */
   .products-grid { grid-template-columns: repeat(3, 1fr); }
